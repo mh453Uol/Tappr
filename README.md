@@ -8,6 +8,7 @@ Tappr is a web app where you can rent bikes from locals.
 
 Hosted on a FREE tier server - http://cyclehirefromlocals.azurewebsites.net/
 
-Will upload code in a bit. 
-
+Test Account
+3mail: aylesu@mailinator.com
+pass: HelloBots1!
 
