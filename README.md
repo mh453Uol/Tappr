@@ -1,6 +1,5 @@
 # Tappr
-
-https://goo.gl/rZ9tqm 
+Live Demo System - http://cyclehirefromlocals.azurewebsites.net/
 
 Tappr is a web app where you can rent bikes from locals. 
 
@@ -8,7 +7,6 @@ Tappr is a web app where you can rent bikes from locals.
 1. ASP.NET Core & Entity Framework Core
 2. HTML5, CSS, JavaScript, Semantic UI and Google Services.
 
-Hosted on a FREE tier server - http://cyclehirefromlocals.azurewebsites.net/
 
 Test Account
 1. 3mail: aylesu@mailinator.com
@@ -16,3 +14,5 @@ Test Account
 
 Search
 1. Only cycles in leicester - http://cyclehirefromlocals.azurewebsites.net/Home/Search?Location=University+of+Leicester%2C+University+Road%2C+Leicester%2C+UK&Latitude=52.6368778&Longitude=-1.1397591999999577&SelectedRadius=25
+
+https://goo.gl/rZ9tqm 
