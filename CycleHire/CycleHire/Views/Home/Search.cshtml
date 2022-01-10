@@ -1,0 +1,79 @@
+﻿@model SearchViewModel
+@inject IImageUploader images
+
+<div class="ui form">
+    <form asp-controller="Home" asp-action="Search" method="get">
+        <div class="field" id="js-location-autocomplete">
+            <div class="ui fluid action input">
+                <input asp-for="@Model.Location" id="js-location-prediction" type="text"
+                       placeholder="Location e.g Leeds">
+                <input asp-for="@Model.Latitude" id="js-latitude" type="hidden" />
+                <input asp-for="@Model.Longitude" id="js-longitude" type="hidden" />
+                <button type="submit" class="ui button">Search</button>
+            </div>
+            <span asp-validation-for="Location" class="red-text"></span>
+            <span asp-validation-for="Latitude" class="red-text"></span>
+            <span asp-validation-for="Longitude" class="red-text"></span>
+        </div>
+
+        <div class="ui accordion field">
+            <div class="title">
+                <i class="icon dropdown"></i>
+                Filter Listings
+            </div>
+            <div class="content field">
+                <label class="transition hidden">Radius</label>
+                <select asp-for="SelectedRadius" class="ui search dropdown transition hidden"
+                        asp-items="@(new SelectList(Model.Radius,"Key","Value"))"></select>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+@if (Model.Listings.Any())
+{
+    <div style="width:100%;height:300px" id="js-map-listings" class="ui segment"></div>
+}
+else
+{
+    @await Html.PartialAsync("_NoItemsPartial", new NoItemsViewModel("We can't find any listing within your area increase your search radius", "Go spead the word.", "map pin"));
+}
+
+
+<div class="ui centered link cards">
+    @foreach (var listing in Model.Listings)
+    {
+        <a class="card" asp-controller="Listing" asp-action="Details" asp-route-id="@listing.Id">
+            <div class="ui image">
+                <img src="@images.GetBikeImageById(listing.Images.First().ImagePublicId,300,300)">
+            </div>
+
+            <div class="content">
+                <div class="header">@listing.Title</div>
+            </div>
+            <div class="extra content">
+                <span class="right floated">
+                    @listing.Created.DurationInDays()
+                </span>
+                <div class="ui blue label">
+                    <i class="pound sign icon"></i>
+                    From @listing.Price.ToString("C")
+                </div>
+            </div>
+        </a>
+    }
+</div>
+
+@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            ListingController.initialize("#js-location-autocomplete")
+            $('.ui.dropdown').dropdown();
+            $('.ui.accordion').accordion();
+            var json = @Html.Raw(Json.Serialize(@Model.Listings));
+            GoogleMapsController.addMapWithMultipleMarkers("js-map-listings",@Model.Latitude,@Model.Longitude, json)
+        });
+    </script>
+}

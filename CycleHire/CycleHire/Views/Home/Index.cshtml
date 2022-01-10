@@ -1,0 +1,42 @@
+﻿@model SearchViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="ui inverted vertical masthead center aligned segment">
+    <div class="ui text container">
+        <h1 class="ui inverted header">
+            Bike Rental Made Easy
+        </h1>
+        <h2>Rent out bikes from locals.</h2>
+
+        <div class="ui form">
+            <form asp-controller="Home" asp-action="Search" method="get">
+                <div class="field" id="js-location-autocomplete">
+                    <div class="ui fluid action input">
+                        <input asp-for="@Model.Location" id="js-location-prediction" type="text"
+                               placeholder="Location e.g Leeds">
+                        <input asp-for="@Model.Latitude" id="js-latitude" type="hidden" value="0" />
+                        <input asp-for="@Model.Longitude" id="js-longitude" type="hidden" value="0" />
+                        <button type="submit" class="ui button">Search</button>
+                    </div>
+
+                    <span asp-validation-for="Location" class="white-text"></span>
+                    <span asp-validation-for="Latitude" class="white-text"></span>
+                    <span asp-validation-for="Longitude" class="white-text"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+
+            ListingController.initialize("#js-location-autocomplete");
+        })
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

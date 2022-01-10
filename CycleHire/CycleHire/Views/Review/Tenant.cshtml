@@ -1,0 +1,54 @@
+﻿@model CycleHire.Core.ViewModels.ReviewViewModels.TenantReviewViewModel
+@inject IImageUploader images
+
+@{
+    ViewData["Title"] = "Review";
+}
+<h2 class="ui header">Review your tenant!</h2>
+
+<div class="ui icon message">
+    <i class="check square icon"></i>
+    <div class="content">
+        <div class="header">
+            You have 14 days after the end of your booking to write a review.
+        </div>
+        <p>Reviews are a important part of our site.</p>
+    </div>
+</div>
+
+
+<form class="ui form" method="post" asp-controller="Review" asp-action="Tenant">
+    @Html.HiddenFor(m => m.BookingId)
+    <div class="field">
+        <label asp-for="ResponseAndCommunication"></label>
+        <input type="hidden" asp-for="ResponseAndCommunication" id="js-communication" />
+        <span class="ui massive star rating" data-field="js-communication"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="LookedAfterBike"></label>
+        <input type="hidden" asp-for="LookedAfterBike" id="js-care" />
+        <span class="ui massive star rating" data-field="js-care"></span>
+    </div>
+    <div class="field">
+        <label asp-for="ReviewMessage"></label>
+        <textarea asp-for="ReviewMessage"></textarea>
+    </div>
+    <input type="submit" class="ui primary button" value="Submit" />
+</form>
+
+
+@section Scripts{
+    <script>
+        $('.rating')
+            .rating({
+                initialRating: 0,
+                clearable: true,
+                maxRating: 5,
+                onRate: function (rating) {
+                    var setInputFieldId = "#" + $(this).attr("data-field");
+                    $(setInputFieldId).val(rating)
+                }
+            });
+    </script>
+}

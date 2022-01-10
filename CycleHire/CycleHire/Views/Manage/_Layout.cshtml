@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="ui dividing header">
+    Manage your account
+    <div class="sub header">Change your account settings</div>
+</h2>
+
+<div class="ui two column stackable grid">
+    <div class="four wide column">
+        @await Html.PartialAsync("_ManageNav")
+    </div>
+    <div class="twelve wide column">
+        @RenderBody()
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
+

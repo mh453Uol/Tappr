@@ -1,0 +1,114 @@
+﻿@model CycleHire.Core.ViewModels.HostViewModels.HostHomeViewModel
+@using Microsoft.Extensions.Options
+@inject IOptions<StripeSettingAuth> Stripe
+@inject IImageUploader images
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@if (!Model.IsProfileComplete)
+{
+    <h1 class="ui center aligned header">Welcome @Model.User.Firstname,</h1>
+    <h3 class="ui center aligned header">To get started please create a stripe account so you can get paid and add your cycle so others can rent it out. </h3>
+
+    <div class="ui tablet stackable two steps">
+        <a class="step @(@Model.IsHostStripeConnected ? "completed" : "")" href=@("https://dashboard.stripe.com/oauth/authorize?response_type=code&client_id=" + Stripe.Value.ClientId + "&scope=read_write")>
+            <i class="dollar icon"></i>
+            <div class="content">
+                <div class="title">Stripe</div>
+                <div class="description">Connect with Stripe so you can get paid.</div>
+            </div>
+        </a>
+        <a class="step  @(@Model.HasAddedListing ? "completed" : "") @(Model.IsHostStripeConnected ? "" : "disabled")" asp-controller="Listing" asp-action="Create">
+            <i class="add circle icon"></i>
+            <div class="content">
+                <div class="title">Add Listing</div>
+                <div class="description">Add a listing for your cycles</div>
+            </div>
+        </a>
+    </div>
+}
+
+@if (Model.IsProfileComplete)
+{
+
+    @if (!Model.PendingBookingRequests.Any())
+    {
+        @await Html.PartialAsync("_NoItemsPartial",
+                new NoItemsViewModel("You don't have any pending bookings at the moment.", "Go spread the word.", "info circle"));
+    }
+    else
+    {
+        <h2>Pending Booking Requests (@Model.PendingBookingRequests.Count())</h2>
+
+        <div class="ui divided items">
+            @foreach (var booking in Model.PendingBookingRequests)
+            {
+                <div class="item">
+                    <div class="ui tiny avatar image">
+                        <img src="@images.GetProfileImageById(booking.User.ProfileImageId, 100, 100)">
+                    </div>
+                    <div class="content">
+                        <div class="header">
+                            <a asp-controller="Profile" asp-action="Index" asp-route-id="@booking.UserId">@booking.User.FullName()</a>
+                            @{var Today = DateTime.Now.Date; var DaysLeft = (booking.From - Today).Days;}
+
+                            @if (DaysLeft == 0)
+                        {
+                                <div class="ui grey label">Expires Today</div>
+                            }
+                            else if (DaysLeft > 1)
+                            {
+                                <div class="ui grey label">Expires in @DaysLeft day</div>
+                            }
+                            else
+                            {
+                                <div class="ui grey label">Expired</div>
+                            }
+                        </div>
+                        <div class="meta">
+                            <p class="duration"><i class="calendar icon"></i> @booking.From.ToString("D") - @booking.To.ToString("D") (@booking.DurationInDays days)</p>
+                            <p><i class="payment icon"></i> @booking.SubTotal.ToString("c")</p>
+                        </div>
+                        <div class="description">
+                            <p>
+                                <i class="bicycle icon"></i>
+                                <a asp-controller="Listing" asp-action="Details" asp-route-id="@booking.ListingId">@booking.Listing.Title</a>
+                            </p>
+
+                            <p>
+                                <i class="comment outline icon"></i>
+                                @booking.UserMessage
+                            </p>
+                        </div>
+
+                        @if (DaysLeft >= 0)
+                        {
+                            <div class="extra">
+                                <a class="ui left floated positive button" id="accept-@booking.Id">
+                                    Approve
+                                    <i class="right chevron icon"></i>
+                                </a>
+                                <a class="ui left floated red button" id="decline-@booking.Id">
+                                    Decline
+                                    <i class="right chevron icon"></i>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                @await Html.PartialAsync("_ApproveBookingModal", booking)
+                                @await Html.PartialAsync("_DeclineBookingModal", Model.ToDeclineViewModel(booking))
+
+                                <script>
+                                $(document).ready(function(){
+                                    $("#accept-booking-@booking.Id").modal("attach events", "#accept-@booking.Id");
+                                    $("#decline-booking-@booking.Id").modal("attach events", "#decline-@booking.Id");
+                                })
+                                </script>
+
+                                }
+        </div>
+                                }
+                                }

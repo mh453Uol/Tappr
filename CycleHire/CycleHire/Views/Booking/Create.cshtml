@@ -1,0 +1,136 @@
+﻿@model CycleHire.Core.ViewModels.BookingViewModels.BookingFormViewModel
+@inject IImageUploader images
+
+@{
+    ViewData["Title"] = "Booking Create";
+}
+
+<div class="ui stackable grid">
+    <div class="ten wide column">
+        <div class="ui warning message">
+            <div class="header">
+                Once you enter your card details and your booking request is accepted by @Model.Listing.User.Firstname, @Html.DisplayFor(m => m.TotalPrice) will leave your account.
+                If @Model.Listing.User.Firstname doesnt accept your requests no money will leave your account!
+            </div>
+            Click here for more information
+        </div>
+
+        <form asp-controller="Booking" asp-action="Create" method="post" id="payment-form">
+            @* Hidden Inputs *@
+            @Html.HiddenFor(m => m.Listing.From)
+            @Html.HiddenFor(m => m.Listing.To)
+            @Html.HiddenFor(m => m.Listing.Id)
+            <div class="ui form">
+                <div class="field">
+                    <label asp-for="MessageToOwner">Message to Owner</label>
+                    <textarea asp-for="MessageToOwner" placeholder="Introduce yourself, explain why you would like to hire the cycle." id="messageToOwner-element"></textarea>
+                    <div id="message-errors" role="alert" class="red-text"></div>
+                </div>
+
+                <div class="field">
+                    <label asp-for="UserEmailAddress">Email Receipt To</label>
+                    <input asp-for="UserEmailAddress" type="text" value="@Model.UserEmailAddress" disabled />
+                    <div id="emailto-errors" role="alert" class="red-text"></div>
+                </div>
+
+                <div class="field">
+                    <label asp-for="UserMobileNumber">Mobile Number</label>
+                    <input asp-for="UserMobileNumber" type="tel" id="phonenumber-element" />
+                    <div id="phonenumber-errors" role="alert" class="red-text"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label for="card-element">
+                            Credit or debit card
+                        </label>
+                        <div id="card-element">
+                            <!-- a Stripe Element will be inserted here. -->
+                        </div>
+
+                        <!-- Used to display form errors -->
+                        <div id="card-errors" role="alert" class="red-text"></div>
+                    </div>
+                </div>
+                <button type="submit" class="ui primary submit button" id="submitButton" style="margin-top:20px">Pay @Html.DisplayFor(m => m.TotalPrice)</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="six wide column">
+        <div class="ui fluid card">
+            <div class="content">
+                <div class="right floated meta">@Model.Listing.Created.DurationInDays()</div>
+                <img class="ui avatar image" src="@images.GetProfileImageById(Model.Listing.User.ProfileImageId,30,30)">@Model.Listing.User.Firstname
+            </div>
+            <div class="content">
+                <div class="header">@Model.Listing.Title</div>
+                <div class="description">
+                    <div class="keep-formatting" style="margin-bottom:0.5em">@Model.Listing.Description</div>
+                    @if (Model.Listing.Accessories.Count > 0)
+                    {
+                        <p class="meta">Included Accessories</p>
+                    }
+                    @foreach (var accessory in Model.Listing.Accessories)
+                    {
+                        <p><i class="check square icon"></i>@accessory.Name</p>
+                    }
+                </div>
+            </div>
+            <div class="extra content">
+                <div class="ui grid">
+                    <div class="six wide column center aligned">
+                        <div>
+                            @Html.DisplayFor(m => m.Listing.From)
+                        </div>
+                        <div class="meta">From</div>
+                    </div>
+                    <div class="four wide column center aligned">
+                        <i class="big chevron right icon" style="padding-top:6px"></i>
+                    </div>
+                    <div class="six wide column center aligned">
+                        <div>
+                            @Html.DisplayFor(m => m.Listing.To)
+                        </div>
+                        <div class="meta">To</div>
+                    </div>
+                </div>
+            </div>
+            <div class="extra content">
+                <table class="ui very basic table">
+                    <tbody>
+                        <tr>
+                            <td>@Html.DisplayFor(m => m.Listing.Price) x @Model.DurationInDays @(Model.DurationInDays > 1 ? "Days" : "Day" )</td>
+                            <td class="ui right aligned">@Html.DisplayFor(m => m.SubTotal)</td>
+                        </tr>
+                        <tr>
+                            <td>Stripe Transaction Fee</td>
+                            <td class="ui right aligned">@Html.DisplayFor(m => m.StripeTransactionFees)</td>
+                        </tr>
+                        <tr>
+                            <td>Service Fee</td>
+                            <td class="ui right aligned">@Html.DisplayFor(m => m.OurServiceFees)</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th class="ui right aligned">@Html.DisplayFor(m => m.TotalPrice)</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $("#phonenumber-element").intlTelInput();
+        })
+    </script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="~/js/stripe.js"></script>
+}

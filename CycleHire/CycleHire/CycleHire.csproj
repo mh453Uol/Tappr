@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
+    <UserSecretsId>aspnet-CycleHire-CFB77BFF-A5ED-4B67-A089-5C71440B75CE</UserSecretsId>
+    <CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Shared\Email\ConfirmEmail.cshtml" />
+    <Content Remove="Views\Shared\Email\PendingBooking.cshtml" />
+    <Content Remove="Views\Shared\Email\ResetPassword.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="6.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.1.0" />
+    <PackageReference Include="Cloudinary.Core" Version="1.31.0" />
+    <PackageReference Include="ErikEJ.EntityFrameworkCore.DgmlBuilder" Version="1.0.7" />
+    <PackageReference Include="FluentEmail.Mailgun" Version="2.3.1" />
+    <PackageReference Include="FluentEmail.Razor" Version="2.3.2" />
+    <PackageReference Include="FluentEmail.SendGrid" Version="2.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" PrivateAssets="All" />
+    <PackageReference Include="Sendgrid" Version="9.9.0" />
+    <PackageReference Include="Stripe.net" Version="12.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\Shared\Email\ConfirmEmail.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Email\PendingBooking.cshtml" />
+    <EmbeddedResource Include="Views\Shared\Email\ResetPassword.cshtml" />
+  </ItemGroup>
+<Target Name="MyPreCompileTarget" BeforeTargets="Build">
+  <Exec Command="gulp min" />
+</Target>
+
+</Project>

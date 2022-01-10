@@ -1,0 +1,25 @@
+@using Microsoft.AspNetCore.Identity
+@using CycleHire.Core.ViewModels
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="ui simple dropdown item" id="js-profile">
+        Hi, @UserManager.GetUserName(User)
+        <i class="dropdown icon"></i>
+        <div class="menu">
+            <a asp-controller="Profile" asp-action="Index" asp-route-id="@UserManager.GetUserId(User)" class="item">Profile</a>
+            <a asp-controller="Manage" asp-action="Index" class="item">Settings</a>
+            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm">
+                <a href="javascript:$('#logoutForm').submit();" class="item">Logout</a>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <a asp-controller="Account" asp-action="Register" class="item">Register</a>
+    <a asp-controller="Account" asp-action="Login" class="item">Log in</a>
+}

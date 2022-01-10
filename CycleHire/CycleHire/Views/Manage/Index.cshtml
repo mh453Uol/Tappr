@@ -1,0 +1,138 @@
+﻿@model IndexViewModel
+@inject IImageUploader images
+
+@{
+    ViewData["Title"] = "Profile";
+    ViewData.AddActivePage(ManageNavPages.Index);
+}
+
+<h2 class="ui header">@ViewData["Title"]</h2>
+@Html.Partial("_StatusMessage", Model.StatusMessage)
+
+<div class="ui special cards">
+    <div class="card">
+        <div class="blurring dimmable image">
+            <div class="ui dimmer">
+                <div class="content">
+                    <div class="center">
+                        <div class="ui inverted button" id="js-change-profile">Change Profile Image</div>
+                    </div>
+                </div>
+            </div>
+            <img src="@images.GetProfileImageById(Model.ProfileImageId, 300, 300)">
+        </div>
+        <div class="content">
+            <a class="header">@Model.Firstname  @Model.Surname</a>
+        </div>
+    </div>
+</div>
+
+<div class="ui modal" id="update-profile">
+    <div class="header">
+        Profile Picture
+    </div>
+    <div class="image content">
+        <div class="ui medium image">
+            <img src="@images.GetProfileImageById(Model.ProfileImageId, 300, 300)">
+        </div>
+
+        <div class="description">
+            <div class="ui header">Select a new profile image.</div>
+            <form class="ui form" enctype="multipart/form-data" asp-controller="Profile" asp-action="AddImage" method="post" id="add-profile-image">
+                <div class="field">
+                    <label asp-for="@Model.UploadImageModel.Image"></label>
+                    <input asp-for="@Model.UploadImageModel.Image" type="file" accept="image/*" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="actions">
+        <div class="ui black deny button">
+            Cancel
+        </div>
+        <button type="submit" form="add-profile-image" class="ui positive right labeled icon button">
+            Update
+            <i class="checkmark icon"></i>
+        </button>
+    </div>
+</div>
+
+<form method="post" class="ui form">
+    <div asp-validation-summary="All" class="red-text"></div>
+
+    <div class="field">
+        <label asp-for="Firstname"></label>
+        <input asp-for="Firstname" />
+        <span asp-validation-for="Firstname" class="red-text"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Surname"></label>
+        <input asp-for="Surname" />
+        <span asp-validation-for="Surname" class="red-text"></span>
+    </div>
+
+    @*<div class="field">
+            <label asp-for="Email"></label>
+            @if (Model.IsEmailConfirmed)
+                {
+                <div class="ui icon input">
+                    <input asp-for="Email" />
+                    <i class="check icon"></i>
+                </div>
+            }
+            else
+            {
+                <div class="ui action input">
+                    <input asp-for="Email" />
+                    <button asp-action="SendVerificationEmail" class="ui button">Send verification email</button>
+                </div>
+
+            }
+            <span asp-validation-for="Email" class="red-text"></span>
+        </div>*@
+
+    <div class="field">
+        <label asp-for="PhoneNumber"></label>
+        <input asp-for="PhoneNumber" />
+        <span asp-validation-for="PhoneNumber" class="red-text"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="AboutMe"></label>
+        <textarea id="js-editor" asp-for="AboutMe"></textarea>
+    </div>
+
+    <button type="submit" class="ui primary button">Save</button>
+</form>
+
+
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.1/tinymce.min.js"></script>
+    <script>
+        $('.special.cards .image').dimmer({ on: 'hover' });
+
+        $('.message .close').on('click', function () {
+            $(this).closest('.message').transition('fade');
+        });
+
+
+        tinymce.init({
+            selector: '#js-editor',
+            height: 150,
+            menubar: false,
+            branding: false,
+            plugins: [
+                'lists link image preview',
+            ],
+            toolbar: 'undo redo | link | formatselect | bold italic underline  | alignleft aligncenter alignright alignjustify | bullist numlist'
+        });
+
+        $("#js-change-profile").click(function () {
+            $("#update-profile").modal("show");
+        })
+    </script>
+}

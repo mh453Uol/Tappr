@@ -1,0 +1,131 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+<style>
+    .vakata-context {
+        z-index: 999 !important;
+    }
+</style>
+
+<h2>Route Planner</h2>
+
+<div class="ui icon message">
+    <i class="info circle icon"></i>
+    <div class="content">
+        <div class="header">
+            Instructions
+        </div>
+        <p>Add, Delete and Move Folders and Route By Right Clicking.</p>
+    </div>
+</div>
+
+<div class="ui icon message" id="js-location-blocked" style="display:none">
+    <i class="map icon"></i>
+    <div class="content">
+        <div class="header">
+            Enable your location for a better browsing experience
+        </div>
+        <p>Click "Allow" when the location notification pops up!</p>
+    </div>
+</div>
+
+<div>
+    <div class="ui stackable grid">
+        <div class="six wide column">
+            <div id="jstree-hierarchy"></div>
+            <button class="ui primary button hidden" id="jstree-empty">
+                Add a root folder
+            </button>
+        </div>
+        <div class="ten wide column" id="js-route-container">
+            <form class="ui form" id="add-route">
+                <div class="two fields hidden" id="js-start-end-inputs">
+                    <div class="field">
+                        <input id="js-start" type="text" placeholder="Start" required>
+                    </div>
+                    <div class="field">
+                        <input id="js-end" type="text" placeholder="End" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <input class="hidden" id="js-route-name" type="text" placeholder="Route name i.e Holiday Trek" required>
+                </div>
+
+                <input type="submit" id="js-route-save" style="margin-bottom:10px;" class="ui fluid primary button hidden" value="Save" />
+            </form>
+            <div id="map" style="height:390px"></div>
+        </div>
+    </div>
+    <div id="right-panel">
+    </div>
+</div>
+
+<div class="ui modal" id="js-add-folder-modal">
+    <div class="header">
+        Add Folder
+    </div>
+    <div class="content">
+        <div class="description">
+            <form class="ui form" id="add-folder">
+                <div class="field">
+                    <label>Folder Name</label>
+                    <input type="text" name="folder-name" id="js-foldername" placeholder="Folder Name i.e Holiday" required>
+                </div>
+                <div class="ui segment">
+                    <div class="field">
+                        <div class="ui toggle checkbox" id="js-rootfolder-checkbox">
+                            <input type="checkbox" name="root-folder">
+                            <label>Add as root folder.</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui black cancel button js-close-folder-modal">
+                    Cancel
+                </div>
+                <button type="submit" form="add-folder" class="ui positive right labeled icon button" id="js-add-folder">
+                    Add
+                    <i class="checkmark icon"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="ui modal" id="js-edit-folder">
+    <div class="header">
+        Edit Folder Name
+    </div>
+    <div class="content">
+        <div class="description">
+            <form class="ui form" id="edit-folder">
+                <div class="field">
+                    <label>Folder Name</label>
+                    <input type="text" name="folder-name" id="js-edit-foldername" placeholder="Folder Name i.e Holiday" required>
+                </div>
+                <div class="ui black cancel button js-close-folder-modal">
+                    Cancel
+                </div>
+                <button type="submit" form="edit-folder" class="ui positive right labeled icon button" id="js-edit-folder">
+                    Update
+                    <i class="checkmark icon"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            RoutePlannerController.initialize("#js-route-container");
+        });
+
+    </script>
+}

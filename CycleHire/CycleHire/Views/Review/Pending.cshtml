@@ -1,0 +1,64 @@
+﻿@model CycleHire.Core.ViewModels.ReviewViewModels.ReviewIndexViewModel
+@inject IImageUploader images
+@{
+    ViewData["Title"] = "Pending Reviews";
+}
+
+
+<h2 class="ui dividing header">Pending Reviews About Host</h2>
+
+<div class="ui divided items">
+    @foreach (var booking in Model.PendingReviewsAboutHost)
+    {
+        <div class="item">
+            <div class="ui avatar tiny image">
+                <img src="@images.GetProfileImageById(booking.Owner.ProfileImageId, 100, 100)">
+            </div>
+            <div class="content">
+                <div class="header">
+                    <a asp-controller="Profile" asp-action="Index" asp-route-id="@booking.OwnerId">@booking.Owner.FullName()</a>
+                </div>
+                <div class="meta">
+                    <p class="duration"><i class="calendar icon"></i> @booking.From.ToString("D") - @booking.To.ToString("D") (@booking.DurationInDays days)</p>
+                    <p><i class="payment icon"></i> @booking.TotalPrice.ToString("C")</p>
+                </div>
+                <div class="extra">
+                    <div class="ui primary buttons">
+                        <a asp-controller="Review" asp-action="Host" asp-route-id="@booking.Id" class="ui button">Write Review</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.UserType == UserType.Host)
+{
+    <h2 class="ui dividing header">
+        Reviews About Tenants
+    </h2>
+    <div class="ui divided items">
+        @foreach (var booking in Model.PendingReviewsAboutTenant)
+        {
+            <div class="item">
+                <div class="ui avatar tiny image">
+                    <img src="@images.GetProfileImageById(booking.User.ProfileImageId, 100, 100)">
+                </div>
+                <div class="content">
+                    <div class="header">
+                        <a asp-controller="Profile" asp-action="Index" asp-route-id="@booking.UserId">@booking.User.FullName()</a>
+                    </div>
+                    <div class="meta">
+                        <p class="duration"><i class="calendar icon"></i> @booking.From.ToString("D") - @booking.To.ToString("D") (@booking.DurationInDays days)</p>
+                        <p><i class="payment icon"></i> @booking.TotalPrice.ToString("C")</p>
+                    </div>
+                    <div class="extra">
+                        <div class="ui primary buttons">
+                            <a asp-controller="Review" asp-action="Tenant" asp-route-id="@booking.Id" class="ui button">Write Review</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

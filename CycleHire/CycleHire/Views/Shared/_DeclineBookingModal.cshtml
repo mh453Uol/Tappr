@@ -1,0 +1,24 @@
+﻿@model CycleHire.Core.ViewModels.HostViewModels.HostDeclineViewModel
+<div class="ui modal" id="decline-booking-@Model.BookingId">
+    <div class="header">
+        Decline @Model.TenantName Booking Request
+    </div>
+    <div class="content">
+        <div class="description">
+            <h3>Are you sure you want to decline @Model.TenantName booking request ?</h3>
+            <form class="ui form" method="post" id="decline-form">
+                @Html.HiddenFor(m => m.BookingId)
+                <div class="field">
+                    <label asp-for="Message">Message to @Model.TenantName (Optional)</label>
+                    <textarea asp-for="Message"></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui button">
+            Cancel
+        </div>
+        <input type="submit" value="Decline" class="ui red button" form="decline-form" asp-controller="Booking" asp-action="Decline" asp-route-id="@Model.BookingId">
+    </div>
+</div>

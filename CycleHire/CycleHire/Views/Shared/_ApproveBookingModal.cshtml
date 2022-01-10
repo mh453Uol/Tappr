@@ -1,0 +1,20 @@
+﻿@model Booking
+<div class="ui modal" id="accept-booking-@Model.Id">
+    <div class="header">
+        Approve @Model.User.FullName() Booking Request
+    </div>
+    <div class="content">
+        <div class="description">
+            <p>Once you accept the booking request @Model.User.FullName() will be charged. You will recieve @Model.SubTotal.ToString("C") in a few days.</p>
+            <p>I am able to rent out my bike out with all included accessories included in the listing from <b>@Model.From.ToString("D")</b> to <b>@Model.To.ToString("D") (@Model.DurationInDays days)</b>  ?</p>
+        </div>
+    </div>
+    <div class="actions">
+
+        <form asp-controller="Booking" method="post" asp-action="Approve" asp-route-id="@Model.Id">
+            <div class="ui cancel button">Cancel</div>
+
+            <input type="submit" value="Approve" class="ui primary button button" />
+        </form>
+    </div>
+</div>

@@ -1,0 +1,122 @@
+﻿@model CycleHire.Core.ViewModels.ReviewViewModels.ReviewIndexViewModel
+@inject IImageUploader images
+@{
+    ViewData["Title"] = "Pending Reviews";
+}
+
+<div class="ui icon message">
+    <i class="inbox icon"></i>
+    <div class="content">
+        <div class="header">
+            Your reviews will be visible on listing after 14 days of your rental
+        </div>
+        <p>2 way reviews are a important part of your site.</p>
+    </div>
+</div>
+
+<h2 class="ui dividing header">Reviews About Host</h2>
+
+<div class="ui items">
+    @foreach (var review in Model.ReviewsAboutHosts)
+    {
+        <div class="item">
+            <div class="content">
+                <div class="header">
+                    <a asp-controller="Booking" asp-action="Details" asp-route-id="@review.BookingId">@review.Listing.Title</a>
+                </div>
+                <div class="meta">
+                    <p class="duration"><i class="calendar icon"></i> @review.Booking.From.ToString("D") - @review.Booking.To.ToString("D") (@review.Booking.DurationInDays days)</p>
+                    <p><i class="payment icon"></i> @review.Booking.TotalPrice.ToString("C")</p>
+                </div>
+
+                <table class="ui very basic table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Communication</td>
+                            <td><span class="ui massive star rating" data-rating="@review.ResponseAndCommunication" data-max-rating="5" data-field="js-communication"></span></td>
+                            <td>Accuracy</td>
+                            <td><span class="ui massive star rating" data-rating="@review.AccuracyOfListing" data-max-rating="5" data-field="js-communication"></span></td>
+                        </tr>
+                        <tr>
+                            <td>Value</td>
+                            <td><span class="ui massive star rating" data-rating="@review.Value" data-max-rating="5" data-field="js-communication"></span></td>
+                            <td>Location</td>
+                            <td><span class="ui massive star rating" data-rating="@review.Location" data-max-rating="5" data-field="js-communication"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                @if (!String.IsNullOrEmpty(review.ReviewMessage))
+                {
+                    <div class="ui form">
+                        <div class="field">
+                            <label asp-for="@review.ReviewMessage"></label>
+                            <textarea readonly>@review.ReviewMessage</textarea>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.UserType == UserType.Host)
+{
+    <h2 class="ui dividing header">Reviews About Tenants</h2>
+
+    <div class="ui items">
+        @foreach (var review in Model.ReviewsAboutTenants)
+        {
+            <div class="item">
+                <div class="content">
+                    <div class="header">
+                        <a asp-controller="Booking" asp-action="Details" asp-route-id="@review.BookingId">@review.Listing.Title</a>
+                    </div>
+                    <div class="meta">
+                        <p class="duration"><i class="calendar icon"></i> @review.Booking.From.ToString("D") - @review.Booking.To.ToString("D") (@review.Booking.DurationInDays days)</p>
+                        <p><i class="payment icon"></i> @review.Booking.TotalPrice.ToString("C")</p>
+                    </div>
+
+                    <table class="ui very basic table">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Communication</td>
+                                <td><span class="ui massive star rating" data-rating="@review.ResponseAndCommunication" data-max-rating="5" data-field="js-communication"></span></td>
+
+                                <td>Mindful of Bike</td>
+                                <td><span class="ui massive star rating" data-rating="@review.LookedAfterBike" data-max-rating="5" data-field="js-communication"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    @if (!String.IsNullOrEmpty(review.ReviewMessage))
+                    {
+                        <div class="ui form">
+                            <div class="field">
+                                <label asp-for="@review.ReviewMessage"></label>
+                                <textarea readonly>@review.ReviewMessage</textarea>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts{
+    <script>
+        $('.rating')
+            .rating('disable', {
+                maxRating: 5
+            });
+    </script>
+}

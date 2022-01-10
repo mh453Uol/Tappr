@@ -1,0 +1,64 @@
+﻿@model CycleHire.Core.ViewModels.ReviewViewModels.HostReviewViewModel
+@inject IImageUploader images
+
+@{
+    ViewData["Title"] = "Review";
+}
+<h2 class="ui header">Review your host!</h2>
+
+<div class="ui icon message">
+    <i class="check square icon"></i>
+    <div class="content">
+        <div class="header">
+            You have 14 days after returning the bike to write a review.
+        </div>
+        <p>Reviews are a important part of our site.</p>
+    </div>
+</div>
+
+
+<form class="ui form" method="post" asp-controller="Review" asp-action="Host">
+    @Html.HiddenFor(m => m.BookingId)
+    <div class="field">
+        <label asp-for="ResponseAndCommunication"></label>
+        <input type="hidden" asp-for="ResponseAndCommunication" id="js-communication" />
+        <span class="ui massive star rating" data-field="js-communication"></span>
+    </div>
+    <div class="field">
+        <label asp-for="AccuracyOfListing"></label>
+        <input type="hidden" asp-for="AccuracyOfListing" id="js-accuracy" />
+        <span class="ui massive star rating" data-field="js-accuracy"></span>
+    </div>
+    <div class="field">
+        <label asp-for="Value"></label>
+        <input type="hidden" asp-for="Value" id="js-value" />
+        <span class="ui massive star rating" data-field="js-value"></span>
+    </div>
+    <div class="field">
+        <label asp-for="Location"></label>
+        <input type="hidden" asp-for="Location" id="js-location" />
+        <span class="ui massive star rating" data-field="js-location"></span>
+    </div>
+    <div class="field">
+        <label asp-for="ReviewMessage"></label>
+        <textarea asp-for="ReviewMessage"></textarea>
+    </div>
+    <input type="submit" class="ui primary button" value="Submit" />
+</form>
+
+
+
+@section Scripts{
+    <script>
+        $('.rating')
+            .rating({
+                initialRating: 0,
+                clearable: true,
+                maxRating: 5,
+                onRate: function (rating) {
+                    var setInputFieldId = "#" + $(this).attr("data-field");
+                    $(setInputFieldId).val(rating)
+                }
+            });
+    </script>
+}

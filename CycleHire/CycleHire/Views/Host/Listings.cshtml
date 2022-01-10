@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Listing>
+@inject IImageUploader images
+
+@{
+    ViewData["Title"] = "Your Listing";
+}
+
+
+<div class="ui centered link cards">
+    @foreach (var listing in Model)
+    {
+        <a class="card" asp-controller="Listing" asp-action="Details" asp-route-id="@listing.Id">
+            <div class="image">
+                <img src="@images.GetBikeImageById(listing.Images.First().ImagePublicId,300,300)">
+            </div>
+            <div class="content">
+                <div class="header">@listing.Title</div>
+            </div>
+            <div class="extra content">
+                <span class="right floated">
+                    @listing.Created.DurationInDays()
+
+                </span>
+                <div class="ui blue label">
+                    <i class="pound sign icon"></i>
+                    From @listing.Price.ToString("C")
+                </div>
+            </div>
+            @*<div class="ui top attached red label">Unlisted</div>*@
+        </a>
+    }
+</div>

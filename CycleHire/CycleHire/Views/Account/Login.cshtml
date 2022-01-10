@@ -1,0 +1,47 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Authentication
+@model LoginViewModel
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    ViewData["Title"] = "Log in";
+}
+<div class="ui attached message">
+    <div class="header">
+        Login
+    </div>
+    <div asp-validation-summary="ModelOnly" class="red-text">
+    </div>
+
+</div>
+<form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="ui form attached fluid segment">
+    <div class="field">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email" class="red-text"></span>
+    </div>
+    <div class="field">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" />
+        <span asp-validation-for="Password" class="red-text"></span>
+    </div>
+    <div class="field">
+        <div class="ui checkbox">
+            <input asp-for="RememberMe" tabindex="0" class="hidden" />
+            <label asp-for="RememberMe">
+            </label>
+        </div>
+    </div>
+
+    <button type="submit" class="ui primary button">Log in</button>
+</form>
+<div class="ui bottom attached warning message">
+    <i class="icon unlock"></i>
+    <a asp-action="ForgotPassword">Forgot your password?</a>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

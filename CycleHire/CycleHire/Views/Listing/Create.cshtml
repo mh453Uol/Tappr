@@ -1,0 +1,88 @@
+﻿@model CycleHire.Core.ViewModels.ListingViewModels.ListingForm
+@{
+    ViewData["Title"] = "Create Listing";
+}
+
+<form asp-controller="Listing" asp-action="Create" enctype="multipart/form-data" class="ui form" method="post">
+    <div class="field">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" />
+        <span asp-validation-for="Title" class="red-text"></span>
+    </div>
+    <div class="field">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="data"></textarea>
+        <span asp-validation-for="Description" class="red-text"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Accessories"></label>
+        <select class="ui fluid dropdown multi-select multiple" asp-for="IncludedAccessories" asp-items="@(new SelectList(Model.Accessories,"Id","Name"))"></select>
+        <span asp-validation-for="Accessories" class="red-text"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" type="number" min="1" step="any" max="2500" value="1" />
+        <span asp-validation-for="Price" class="red-text"></span>
+    </div>
+
+    <div id="js-location">
+        <div class="field">
+            <label asp-for="Address"></label>
+            <input id="js-location-prediction" asp-for="Address" type="text" />
+            <span asp-validation-for="Address" class="red-text"></span>
+            <span asp-validation-for="Latitude" class="red-text"></span>
+            <span asp-validation-for="Longitude" class="red-text"></span>
+        </div>
+
+        <input id="js-latitude" asp-for="Latitude" type="hidden" />
+        <input id="js-longitude" asp-for="Longitude" type="hidden" />
+    </div>
+
+    <div class="field">
+        <label asp-for="Availability.DayOfWeek"></label>
+        <select class="ui fluid dropdown multi-select multiple" asp-for="Availability.SelectedDayOfWeek" asp-items="@(new SelectList(Model.Availability.DayOfWeek))"></select>
+        <span asp-validation-for="Availability.SelectedDayOfWeek" class="red-text"></span>
+    </div>
+    <div class="field">
+        <label asp-for="UploadedImages"></label>
+        <input asp-for="UploadedImages" type="file" accept="image/*" multiple />
+        <span asp-validation-for="UploadedImages" class="red-text"></span>
+    </div>
+
+    <button type="submit" class="ui primary submit button" id="submitButton">Submit</button>
+</form>
+
+@section Scripts {
+    <script>
+
+        $('.multi-select').dropdown();
+
+        $(document).ready(function () {
+
+            ListingController.initialize("#js-location")
+            //Dropzone.autoDiscover = false;
+
+            //Dropzone.options.myAwesomeDropzone = {
+            //    autoProcessQueue: false,
+            //    uploadMultiple: true,
+            //    parallelUploads: 100,
+            //    maxFilesize: 10, // 20MB max size
+            //    maxFiles: 6,
+            //    acceptedFiles: "image/*",
+            //    addRemoveLinks: true,
+            //    init: function () {
+            //        var myDropzone = this;
+            //        $("#submitButton").click(function (e) {
+            //            // Make sure that the form isn't actually being sent.
+            //            e.preventDefault();
+            //            e.stopPropagation();
+            //            myDropzone.processQueue();
+            //        });
+            //    }
+            //};
+        });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

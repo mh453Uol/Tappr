@@ -1,0 +1,55 @@
+﻿@model ApplicationUser
+@inject IImageUploader images
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="ui two column stackable grid">
+    <div class="four wide column">
+
+        <div class="ui card">
+            <div class="image">
+                <img src="@images.GetProfileImageById(Model.ProfileImageId,300,300)">
+            </div>
+            <div class="content">
+                <a class="header">@Model.FullName()</a>
+            </div>
+        </div>
+    </div>
+    <div class="twelve wide column">
+        <div>@Html.Raw(Model.AboutMe)</div>
+    </div>
+</div>
+
+<h2 class="ui dividing header">
+    <i class="list icon"></i>
+    <div class="content">
+        Listings
+    </div>
+</h2>
+
+<div class="ui link cards">
+    @foreach (var listing in Model.Listings)
+    {
+        <a class="card" asp-controller="Listing" asp-action="Details" asp-route-id="@listing.Id">
+            <div class="ui image">
+                <img src="@images.GetBikeImageById(listing.Images.FirstOrDefault().ImagePublicId,300,300)">
+            </div>
+
+            <div class="content">
+                <div class="header">@listing.Title</div>
+            </div>
+            <div class="extra content">
+                <span class="right floated">
+                    @listing.Created.DurationInDays()
+                </span>
+                <div class="ui blue label">
+                    <i class="pound sign icon"></i>
+                    From @listing.Price.ToString("C")
+                </div>
+            </div>
+        </a>
+    }
+</div>
+

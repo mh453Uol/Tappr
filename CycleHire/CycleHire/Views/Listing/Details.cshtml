@@ -1,0 +1,163 @@
+﻿@model CycleHire.Core.ViewModels.ListingViewModels.ListingDetailsViewModel
+@inject IImageUploader images
+
+@{
+    ViewData["Title"] = "Listing Details";
+}
+<div class="ui items">
+    <div class="item">
+        <div class="content">
+            <div class="header">@Model.Title</div>
+        </div>
+    </div>
+</div>
+<div class="ui stackable grid">
+    <div class="ten wide column">
+        <div class="owl-carousel owl-theme">
+            @foreach (string id in Model.Images)
+            {
+                <img class="ui rounded image" src="@images.GetBikeImageById(id,490,690)" al alt="Uploaded by " + @Model.User.Firstname />
+            }
+        </div>
+    </div>
+
+    <div class="six wide column">
+        <div class="ui fluid card">
+            <div class="content">
+                <div class="right floated meta">@Model.Created.DurationInDays()</div>
+                <img class="ui avatar image" src="@images.GetProfileImageById(Model.User.ProfileImageId,30,30)">
+                <a asp-controller="Profile" asp-action="Index" asp-route-id="@Model.User.Id">@Model.User.GetFullname()</a>
+            </div>
+            <div class="content">
+                <div class="header">
+                    @Html.DisplayFor(m => m.Price)
+                </div>
+
+                <div class="meta">per day</div>
+
+                <div class="description">
+                    <div class="keep-formatting" style="margin-bottom:0.5em">@Model.Description</div>
+
+                    @if (Model.Accessories.Count > 0)
+                    {
+                        <p class="meta">Included Accessories</p>
+                    }
+                    @foreach (var accessory in Model.Accessories)
+                    {
+                        <p><i class="check square icon"></i>@accessory.Name</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="ui fluid card">
+            <div class="ui segment">
+                <form asp-controller="Booking" asp-action="Create" method="get">
+                    <div class="ui form js-calendar" data-listing-id="@Model.Id">
+                        <div class="two fields">
+                            @Html.HiddenFor(f => f.Id)
+                            <div class="field">
+                                <label asp-for="From"></label>
+                                <input asp-for="From" class="datepicker" id="js-from" placeholder="From" data-listing-id="@Model.Id">
+                            </div>
+                            <div class="field">
+                                <label asp-for="To"></label>
+                                <input asp-for="To" class="datepicker" id="js-to" placeholder="To" data-listing-id="@Model.Id">
+                            </div>
+                        </div>
+                        <div>
+                            <div id="js-success-info">
+                                <p id="js-total-days"></p>
+                                <p id="js-total-price" data-price="@Model.Price"></p>
+                            </div>
+                            <p id="js-error"></p>
+                            <button type="submit" class="ui fluid submit primary button" disabled id="js-button">Book</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="ui header">
+    <i class="certificate icon"></i>
+    <div class="content">
+        @(Model.Review.Reviews.Count() > 0 ? "Reviews" : "No Reviews")
+    </div>
+</h2>
+
+@if (Model.Review.Reviews.Count() > 0)
+{
+    <div class="ui form">
+        <div class="four fields">
+            <div class="field">
+                <label>Communication</label>
+                <span class="ui massive star rating" data-rating="@Model.Review.AggreatedReview.ResponseAndCommunication" data-max-rating="5"></span>
+            </div>
+            <div class="field">
+                <label>Accuracy</label>
+                <span class="ui massive star rating" data-rating="@Model.Review.AggreatedReview.AccuracyOfListing" data-max-rating="5"></span>
+            </div>
+            <div class="field">
+                <label>Value</label>
+                <span class="ui massive star rating" data-rating="@Model.Review.AggreatedReview.Value" data-max-rating="5"></span>
+            </div>
+            <div class="field">
+                <label>Location</label>
+                <span class="ui massive star rating" data-rating="@Model.Review.AggreatedReview.Location" data-max-rating="5"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui divided items">
+        @foreach (var review in Model.Review.Reviews)
+        {
+            <div class="item">
+                <div class="ui avatar tiny image">
+                    <img src="@images.GetProfileImageById(review.User.ProfileImageId, 100, 100)">
+                </div>
+                <div class="content">
+                    <div class="header">
+                        <a asp-action="Index" asp-controller="Profile" asp-route-id="@review.UserId">@review.User.Firstname</a>
+                    </div>
+                    <div class="keep-formatting">@review.ReviewMessage</div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+<h2 class="ui header">
+    <i class="map marker alternate icon"></i>
+    <div class="content">
+        Map
+    </div>
+</h2>
+
+<div style="width:100%;height:300px" class="ui segment" id="js-googleMap">
+
+</div>
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+
+            $(".owl-carousel").owlCarousel({
+                loop: true,
+                items: 1,
+                nav: true,
+                dots: true
+            });
+
+            CalendarController.initialize(".js-calendar");
+            GoogleMapsController.addMapWithMarker("js-googleMap",@Model.Latitude,@Model.Longitude, 15)
+            $('.rating').rating('disable', {
+                    maxRating: 5
+                });
+        });
+    </script>
+}

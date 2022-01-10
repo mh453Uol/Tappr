@@ -1,0 +1,181 @@
+﻿@model CycleHire.Core.ViewModels.BookingViewModels.BookingDetailsViewModel
+@inject IImageUploader images
+
+@{
+    ViewData["Title"] = "Booking Details";
+}
+@if (Model.IsUser)
+{
+
+    if (!String.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="ui icon warning message">
+            <i class="info circle icon"></i>
+            <div class="content">
+                <div class="header">
+                    Card Details Error
+                </div>
+                <p>@Model.ErrorMessage</p>
+            </div>
+        </div>
+    }
+    @if (Model.Booking.Status == BookingStatus.ACCEPTED)
+    {
+        <div class="ui icon message">
+            <i class="check square icon"></i>
+            <div class="content">
+                <div class="header">
+                    You have been charged.
+                </div>
+                <p>@Model.Booking.TotalPrice.ToString("C") has left your account.</p>
+            </div>
+        </div>
+    }
+
+    @if (Model.Booking.Status == BookingStatus.PENDING)
+    {
+        <div class="ui icon message">
+            <i class="info circle icon"></i>
+            <div class="content">
+                <div class="header">
+                    You haven't been charged.
+                </div>
+                <p>Once @Model.Booking.Listing.User.Firstname accepts your request, @Model.Booking.TotalPrice.ToString("C") will leave your account.</p>
+            </div>
+        </div>
+    }
+
+    @if (Model.Booking.Status == BookingStatus.DECLINED)
+    {
+        <div class="ui icon warning message">
+            <i class="info circle icon"></i>
+            <div class="content">
+                <div class="header">
+                    Host declined your booking.
+                </div>
+                <p>@Model.Booking.Listing.User.Firstname has declined your booking request. No money has been take from your account.We have plenty of more bike for rental.</p>
+            </div>
+        </div>
+    }
+
+    @if (Model.Booking.Status == BookingStatus.CANCELLEDBYHOST)
+    {
+        <div class="ui icon warning message">
+            <i class="info circle icon"></i>
+            <div class="content">
+                <div class="header">
+                    You cancelled this booking.
+                </div>
+            </div>
+        </div>
+    }
+
+
+}
+
+<div class="ui stackable grid">
+    <div class="ten wide column">
+        <div class="ui large horizontal divided list">
+            <div class="item">
+                <img class="ui avatar image" src="@images.GetProfileImageById(Model.Booking.User.ProfileImageId)">
+                <div class="content">
+                    <a class="header" asp-controller="Profile" asp-action="Index" asp-route-id="@Model.Booking.UserId">@Model.Booking.User.FullName()</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui form">
+            <div class="field">
+                <textarea asp-for="Booking.UserMessage" id="messageToOwner-element" value="@Model.Booking.UserMessage" disabled></textarea>
+            </div>
+
+            <div class="field">
+                <label asp-for="Booking.User.Email">Email Receipt To</label>
+                <input asp-for="Booking.User.Email" type="text" value="@Model.Booking.User" disabled />
+                <div id="emailto-errors" role="alert" class="red-text"></div>
+            </div>
+
+            <div class="field">
+                <label asp-for="Booking.UserMobileNumber">Mobile Number</label>
+                <input asp-for="Booking.UserMobileNumber" type="tel" value="@Model.Booking.UserMobileNumber" disabled />
+            </div>
+
+            @if (Model.IsUser)
+            {
+                <div class="field">
+                    <label asp-for="CardLast4Digits">Last 4 Digits Of Card</label>
+                    <input asp-for="CardLast4Digits" type="text" value="@Model.CardLast4Digits" disabled />
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="six wide column">
+        <div class="ui fluid card">
+            <div class="content">
+                <div class="right floated meta">@Model.Booking.Created.DurationInDays()</div>
+                <img class="ui avatar image" src="@images.GetProfileImageById(Model.Booking.Listing.User.ProfileImageId,30,30)">
+                <a asp-controller="Profile" asp-action="Index" asp-route-id="@Model.Booking.OwnerId">@Model.Booking.Listing.User.FullName()</a>
+            </div>
+            <div class="content">
+                <div class="header">
+                    <a asp-controller="Listing" asp-action="Details" asp-route-id="@Model.Booking.ListingId">@Model.Booking.Listing.Title</a>
+                </div>
+                <div class="description">
+                    <div class="keep-formatting" style="margin-bottom:0.5em">@Model.Booking.Listing.Description</div>
+                    @if (Model.Booking.Listing.Accessories.Count > 0)
+                    {
+                        <p class="meta">Included Accessories</p>
+                    }
+                    @foreach (var accessory in Model.Booking.Listing.Accessories)
+                    {
+                        <p><i class="check square icon"></i>@accessory.Accessory.Name</p>
+                    }
+                </div>
+            </div>
+            <div class="extra content">
+                <div class="ui grid">
+                    <div class="six wide column center aligned">
+                        <div>
+                            @Model.Booking.From.ToShortDateString()
+                        </div>
+                        <div class="meta">From</div>
+                    </div>
+                    <div class="four wide column center aligned">
+                        <i class="big chevron right icon" style="padding-top:6px"></i>
+                    </div>
+                    <div class="six wide column center aligned">
+                        <div>
+                            @Model.Booking.To.ToShortDateString()
+                        </div>
+                        <div class="meta">To</div>
+                    </div>
+                </div>
+            </div>
+            <div class="extra content">
+                <table class="ui very basic table">
+                    <tbody>
+                        <tr>
+                            <td>@Model.Booking.PricePerDay.ToString("C") x @Model.Booking.DurationInDays @(Model.Booking.DurationInDays > 1 ? "Days" : "Day" )</td>
+                            <td class="ui right aligned">@Model.Booking.SubTotal.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <td>Stripe Transaction Fee</td>
+                            <td class="ui right aligned">@Model.Booking.StripeTransactionFees.ToString("C")</td>
+                        </tr>
+                        <tr>
+                            <td>Service Fee</td>
+                            <td class="ui right aligned">@Model.Booking.OurServiceFees.ToString("C")</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+                            <th class="ui right aligned">@Model.Booking.TotalPrice.ToString("C")</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

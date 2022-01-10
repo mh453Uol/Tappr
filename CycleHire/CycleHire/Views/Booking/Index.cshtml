@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Booking>
+@inject IImageUploader images
+
+@{
+    ViewData["Title"] = "Bookings";
+}
+
+@if (!Model.Any())
+{
+    @await Html.PartialAsync("_NoItemsPartial",
+        new NoItemsViewModel("You don't have any bookings.", "Go spead the word.", "info circle"));
+}
+
+<div class="ui divided items">
+    @foreach (var booking in Model)
+            {
+        <div class="item">
+            <div class="ui avatar tiny image">
+                <img src="@images.GetProfileImageById(booking.Owner.ProfileImageId, 100, 100)">
+            </div>
+            <div class="content">
+                <div class="header">
+                    <a asp-controller="Profile" asp-action="Index" asp-route-id="@booking.OwnerId">@booking.Owner.FullName()</a>
+                    @if (booking.Status == BookingStatus.ACCEPTED)
+                    {
+                        <div class="ui green label">Accepted</div>
+                    }
+
+                    @if (booking.Status == BookingStatus.PENDING)
+                    {
+                        <div class="ui label">Pending</div>
+                    }
+
+                    @if (booking.Status == BookingStatus.DECLINED)
+                    {
+                        <div class="ui red label">Declined</div>
+                    }
+
+                    @if (booking.Status == BookingStatus.CANCELLEDBYHOST)
+                    {
+                        <div class="ui red label">Cancelled By You</div>
+                    }
+                </div>
+                <div class="meta">
+                    <p class="duration"><i class="calendar icon"></i> @booking.From.ToString("D") - @booking.To.ToString("D") (@booking.DurationInDays days)</p>
+                    <p><i class="payment icon"></i> @booking.TotalPrice.ToString("C")</p>
+                </div>
+                <div class="description">
+                    <p>
+                        <i class="bicycle icon"></i>
+                        <a asp-controller="Listing" asp-action="Details" asp-route-id="@booking.ListingId">@booking.Listing.Title</a>
+                    </p>
+                </div>
+                <div class="extra">
+                    <div class="ui primary buttons">
+                        <a asp-controller="Booking" asp-action="Details" asp-route-id="@booking.Id" class="ui button">View</a>
+                        @if (booking.Status == BookingStatus.PENDING)
+                        {
+                            <div class="ui floating dropdown icon button">
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <a asp-controller="Booking" asp-action="Cancel" asp-route-id="@booking.Id" class="item"><i class="delete icon"></i>Cancel</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts{
+    <script>
+        $('.ui.dropdown').dropdown();
+    </script>
+}
